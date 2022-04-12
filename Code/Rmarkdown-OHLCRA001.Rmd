@@ -1,0 +1,62 @@
+---
+title: "Data management markdown"
+author: "Craig Oehley"
+date: "12/04/2022"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Reading in required packages 
+
+```{r cars, warning=FALSE, eval=FALSE}
+library(tidyverse)
+library(readr)
+library(readxl)
+```
+
+## Importing excel data set
+The Original data set had many variables and columns which either repeated data or simply was not data required in analysis of this project.The relevant columns of data are stitched together using a combination of range and bind_cols function of tidyverse
+```{r eval=FALSE}
+data <- bind_cols(read_xlsx("Data/Copy_raw_Porcelain_family_data.xlsx", range = "A1:H71"),
+                  read_xlsx("Data/Copy_raw_Porcelain_family_data.xlsx", range = "K1:K71"),
+                  read_xlsx("Data/Copy_raw_Porcelain_family_data.xlsx", range = "S1:T71")) %>%
+```
+ 
+## Tidying data
+ Data set already matches most tidy formats, however must be converted to long format
+ 
+```{r eval=FALSE}
+pivot_longer( cols = c(Latitude1, Longitude1), names_to= "Variable",
+             values_to = "Value")   %>%
+
+```
+## Outputing/Visualisation 
+As an example of visualizing the data, a simple output comparing the latitude and longitude's of different genus's using box plots
+```{r echo = FALSE, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(readr)
+library(readxl)
+
+data <- bind_cols(read_xlsx("Data/Copy_raw_Porcelain_family_data.xlsx", range = "A1:H71"),
+                  read_xlsx("Data/Copy_raw_Porcelain_family_data.xlsx", range = "K1:K71"),
+                  read_xlsx("Data/Copy_raw_Porcelain_family_data.xlsx", range = "S1:T71")) %>%
+  
+  pivot_longer( cols = c(Latitude1, Longitude1), names_to= "Variable",
+             values_to = "Value")   %>%
+
+ggplot() +
+  geom_boxplot(aes(y = Value, x = Genus)) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  facet_wrap(vars( Variable), scales = "free") 
+ 
+data
+
+```
+
+
